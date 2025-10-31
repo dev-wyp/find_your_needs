@@ -5,6 +5,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+app.use(express.static('public'));
 
 app.use('/api/auth', require('./routes/auth').default)
 app.use('/api/listings', require('./routes/listings').default)
