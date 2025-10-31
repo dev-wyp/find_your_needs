@@ -42,13 +42,20 @@ const getYearlyCounts = async (
 // --- Single combined endpoint ---
 router.get("/", isSuperAdmin, async (req, res) => {
   try {
-    const totalUsers = await prisma.user.count({});
-    const totalListings = await prisma.listing.count({});
-    const restaurantCount = await prisma.listing.count({
+    const totalUsers = await prisma.user.aggregate({ _count: true });
+    const totalListings = await prisma.listing.aggregate({ _count: true });
+    const restaurantCount = await prisma.listing.aggregate({
       where: { type: "RESTAURANT" },
+      _count: true,
     });
-    const hotelCount = await prisma.listing.count({ where: { type: "HOTEL" } });
-    const shopCount = await prisma.listing.count({ where: { type: "SHOP" } });
+    const hotelCount = await prisma.listing.aggregate({
+      where: { type: "HOTEL" },
+      _count: true,
+    });
+    const shopCount = await prisma.listing.aggregate({
+      where: { type: "SHOP" },
+      _count: true,
+    });
 
     const currentYear = new Date().getFullYear();
     const monthlyListings = await getMonthlyCounts("listing", currentYear);
@@ -58,11 +65,11 @@ router.get("/", isSuperAdmin, async (req, res) => {
 
     res.json({
       totals: {
-        totalUsers,
-        totalListings,
-        restaurantCount,
-        hotelCount,
-        shopCount,
+        totalUsers: totalUsers._count._all,
+        totalListings: totalListings._count._all,
+        restaurantCount: restaurantCount._count._all,
+        hotelCount: hotelCount._count._all,
+        shopCount: shopCount._count._all,
       },
       monthly: { listings: monthlyListings, users: monthlyUsers },
       yearly: { listings: last5YearsListings, users: last5YearsUsers },
