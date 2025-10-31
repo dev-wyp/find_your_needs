@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: myapp_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: waiyanphyo
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: findyourneeds
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: myapp_backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/findyourneeds
+      JWT_SECRET: supersecret
+      NODE_ENV: production
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+    command: sh -c "npx prisma migrate deploy && yarn start"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: myapp_frontend
+    restart: always
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:4000/api
+    ports:
+      - "5173:5173"
+    command: ["yarn", "dev", "--host"]
+    volumes:
+      - ./frontend:/app
+
+volumes:
+  postgres_data:

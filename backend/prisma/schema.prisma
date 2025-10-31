@@ -1,0 +1,70 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql" // or "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user") // superAdmin | admin | user
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  listings Listing[] // one user can create many listings
+  reviews  Review[] // 👈 added this line to fix the error
+}
+
+model Listing {
+  id          String      @id @default(uuid())
+  title       String
+  description String?
+  type        ListingType
+  address     String
+  city        String
+  country     String
+  phone       String?
+  website     String?
+  rating      Float?      @default(0)
+  images      String[] // array of image URLs
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  categories ListingCategory[]
+  reviews    Review[]
+}
+
+model ListingCategory {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  listings Listing[]
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  userId    String
+  listingId String
+
+  user    User    @relation(fields: [userId], references: [id])
+  listing Listing @relation(fields: [listingId], references: [id])
+}
+
+enum ListingType {
+  RESTAURANT
+  HOTEL
+  SHOP
+}
