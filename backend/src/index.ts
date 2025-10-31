@@ -22,3 +22,5 @@ res.status(err.status || 500).json({ message: err.message || 'Internal' })
 
 const port = process.env.PORT || 4000
 app.listen(port, () => console.log('Server listening on', port))
+
+export default app
