@@ -6,12 +6,17 @@ app.use(cors())
 app.use(express.json())
 app.set("json spaces", 2);
 
-app.use('/api/auth', require('./routes/auth').default)
-app.use('/api/listings', require('./routes/listings').default)
-app.use('/api/categories', require('./routes/categories').default)
-app.use('/api/users', require('./routes/users').default)
+import authRoutes from './routes/auth'
+import listingsRoutes from './routes/listings'
+import categoriesRoutes from './routes/categories'
+import usersRoutes from './routes/users'
+import dashboardRoutes from './routes/dashboard'
 
-app.use('/api/dashboard', require('./routes/dashboard').default)
+app.use('/api/auth', authRoutes)
+app.use('/api/listings', listingsRoutes)
+app.use('/api/categories', categoriesRoutes)
+app.use('/api/users', usersRoutes)
+app.use('/api/dashboard', dashboardRoutes)
 
 
 app.use((err:any, req:any, res:any, next:any) => {
