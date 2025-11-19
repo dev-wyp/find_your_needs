@@ -1,13 +1,9 @@
 {
-  "outputDirectory": "frontend/dist",
+  "buildCommand": "npm install && npx prisma generate && npm run build",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index"
-    },
-    {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/api/index"
     }
   ],
   "functions": {
@@ -17,3 +13,4 @@
     }
   }
 }
+
