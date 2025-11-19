@@ -21,7 +21,7 @@ res.status(err.status || 500).json({ message: err.message || 'Internal' })
 
 app.use(express.static('public'));
 
-const port = process.env.PORT || 4000
-app.listen(port, () => console.log('Server listening on', port))
+// const port = process.env.PORT || 4000
+// app.listen(port, () => console.log('Server listening on', port))
 
 export default app
